@@ -7,6 +7,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Data.Entity;
+using SkinsHive.Models.IdentityModels;
 
 namespace SkinsHive.Controllers.Api
 {
@@ -22,7 +24,10 @@ namespace SkinsHive.Controllers.Api
         //GET /api/customers
         public IHttpActionResult GetCustomers()
         {
-            var customerDto = _context.Customers.ToList().Select(Mapper.Map<Customer, CustomerDto>);
+            var customerDto = _context.Customers
+                .Include(c => c.MembershipType)
+                .ToList()
+                .Select(Mapper.Map<Customer, CustomerDto>);
             return Ok(customerDto);
         }
 
@@ -41,6 +46,7 @@ namespace SkinsHive.Controllers.Api
 
         //POST /api.customers
         [HttpPost]
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public IHttpActionResult CreateCustomer(CustomerDto customerDto)
         {
             if(!ModelState.IsValid)
@@ -59,7 +65,8 @@ namespace SkinsHive.Controllers.Api
 
        //?PUT .api/customers/1
        [HttpPut]
-       public IHttpActionResult UpdateCustomer(int id, CustomerDto customerDto)
+        [Authorize(Roles = RoleName.CanManageMovies)]
+        public IHttpActionResult UpdateCustomer(int id, CustomerDto customerDto)
         {
             if (!ModelState.IsValid)
             {
@@ -86,6 +93,7 @@ namespace SkinsHive.Controllers.Api
 
         //DELETE /api/customer/1
         [HttpDelete]
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public IHttpActionResult DeleteCustomer(int id)
         {
             var customerInDb = _context.Customers.SingleOrDefault(c => c.Id == id);

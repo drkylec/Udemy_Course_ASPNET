@@ -6,6 +6,7 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
 using SkinsHive.Models;
+using SkinsHive.Models.IdentityModels;
 
 namespace SkinsHive
 {
@@ -54,9 +55,9 @@ namespace SkinsHive
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
+            app.UseFacebookAuthentication(
+               appId: "1931461870399844",
+               appSecret: "bca1e2a1c967c788b9de6062f7fbd1ee");
 
             //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             //{

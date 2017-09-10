@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using SkinsHive.Models;
 using SkinsHive.ViewModels;
 using System.Data.Entity;
+using SkinsHive.Models.IdentityModels;
 
 namespace SkinsHive.Controllers
 {
@@ -25,11 +26,19 @@ namespace SkinsHive.Controllers
 
         public ViewResult Index()
         {
-            var movies = _context.Movies.ToList();
+            //var movies = _context.Movies.ToList();
 
-            return View(movies);
+            if(User.IsInRole(RoleName.CanManageMovies))
+            {
+                return View("List");
+            }
+            else
+            {
+                return View("ReadOnlyList");
+            }
         }
 
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ViewResult New()
         {
             var movies = _context.Movies.ToList();
@@ -41,6 +50,7 @@ namespace SkinsHive.Controllers
             return View("MovieForm", viewModel);
         }
 
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult Edit(int id)
         {
             var movie = _context.Movies.SingleOrDefault(c => c.Id == id);
@@ -89,16 +99,16 @@ namespace SkinsHive.Controllers
             return RedirectToAction("Index", "Movies");
         }
 
-//private IEnumerable<Movie> GetMovies()
-//{
-//    return new List<Movie>
-//    {
-//        new Movie { Id = 1, Name = "Shrek" },
-//        new Movie { Id = 2, Name = "Wall-e" }
-//    };
-//}
+        //private IEnumerable<Movie> GetMovies()
+        //{
+        //    return new List<Movie>
+        //    {
+        //        new Movie { Id = 1, Name = "Shrek" },
+        //        new Movie { Id = 2, Name = "Wall-e" }
+        //    };
+        //}
 
-public ActionResult Details(int id)
+        public ActionResult Details(int id)
         {
             var movie = _context.Movies.SingleOrDefault(m => m.Id == id);
 

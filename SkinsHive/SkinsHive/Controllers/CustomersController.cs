@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using SkinsHive.Models;
 using System.Data.Entity;
 using SkinsHive.ViewModels;
+using SkinsHive.Models.IdentityModels;
 
 namespace SkinsHive.Controllers
 {
@@ -23,6 +24,7 @@ namespace SkinsHive.Controllers
             _context.Dispose();
         }
 
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult New()
         {
             var membershipTypes = _context.MembershipTypes.ToList();
@@ -68,9 +70,15 @@ namespace SkinsHive.Controllers
 
         public ViewResult Index()
         {
-            var customers = _context.Customers.Include(c => c.MembershipType).ToList();
-
-            return View(customers);
+            //var customers = _context.Customers.Include(c => c.MembershipType).ToList();
+            if (User.IsInRole(RoleName.CanManageMovies))
+            {
+                return View("List");
+            }
+            else
+            {
+                return View("ReadOnlyList");
+            }
         }
 
         public ActionResult Details(int id)
@@ -83,6 +91,7 @@ namespace SkinsHive.Controllers
             return View(customer);
         }
 
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult Edit(int id)
         {
             var customer = _context.Customers.SingleOrDefault(c => c.Id == id);
